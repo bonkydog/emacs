@@ -249,6 +249,9 @@ static Lisp_Object Qdeferred_action_function;
 
 static Lisp_Object Qdelayed_warnings_hook;
 
+static Lisp_Object Qactivate_emacs_hook;
+static Lisp_Object Qdeactivate_emacs_hook;
+
 static Lisp_Object Qinput_method_exit_on_first_char;
 static Lisp_Object Qinput_method_use_echo_area;
 
@@ -4124,6 +4127,16 @@ kbd_buffer_get_event (KBOARD **kbp,
 	  obj = make_lispy_event (event);
 	  kbd_fetch_ptr = event + 1;
 	}
+      else if (event->kind == ACTIVATE_EMACS_EVENT)
+      {
+        safe_run_hooks(Qactivate_emacs_hook);
+        kbd_fetch_ptr = event + 1;
+      }
+      else if (event->kind == DEACTIVATE_EMACS_EVENT)
+        {
+          safe_run_hooks(Qdeactivate_emacs_hook);
+          kbd_fetch_ptr = event + 1;
+        }
       else
 	{
 	  /* If this event is on a different frame, return a switch-frame this
@@ -10952,6 +10965,8 @@ syms_of_keyboard (void)
   DEFSYM (Qpost_command_hook, "post-command-hook");
   DEFSYM (Qdeferred_action_function, "deferred-action-function");
   DEFSYM (Qdelayed_warnings_hook, "delayed-warnings-hook");
+  DEFSYM (Qactivate_emacs_hook, "activate-emacs-hook");
+  DEFSYM (Qdeactivate_emacs_hook, "deactivate-emacs-hook");
   DEFSYM (Qfunction_key, "function-key");
   DEFSYM (Qmouse_click, "mouse-click");
   DEFSYM (Qdrag_n_drop, "drag-n-drop");
@@ -11392,6 +11407,16 @@ otherwise the error might happen repeatedly and make Emacs nonfunctional.  */);
   DEFSYM (Qecho_area_clear_hook, "echo-area-clear-hook");
   Fset (Qecho_area_clear_hook, Qnil);
 
+  DEFVAR_LISP ("activate-emacs-hook",  Vactivate_emacs_hook,
+               doc: /* Normal hook run when emacs becomes active.
+                     (Currently only implemented on MacOS and other NextStep-related platforms.)*/);
+  Vactivate_emacs_hook = Qnil;
+
+  DEFVAR_LISP ("deactivate-emacs-hook",  Vdeactivate_emacs_hook,
+               doc: /* Normal hook run when emacs becomes inactive. 
+(Currently only implemented on MacOS and other NextStep-related platforms.)*/);
+  Vdeactivate_emacs_hook = Qnil;
+  
   DEFVAR_LISP ("lucid-menu-bar-dirty-flag", Vlucid_menu_bar_dirty_flag,
 	       doc: /* Non-nil means menu bar, specified Lucid style, needs to be recomputed.  */);
   Vlucid_menu_bar_dirty_flag = Qnil;

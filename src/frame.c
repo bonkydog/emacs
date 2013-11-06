@@ -4491,7 +4491,7 @@ See the command `tool-bar-mode' for a description of this minor mode.
 Setting this variable directly does not take effect;
 either customize it (see the info node `Easy Customization')
 or call the function `tool-bar-mode'.  */);
-#ifdef HAVE_WINDOW_SYSTEM
+#if defined(HAVE_WINDOW_SYSTEM) && defined(I_WANT_THE_TOOLBAR_ON_BY_DEFAULT)
   Vtool_bar_mode = Qt;
 #else
   Vtool_bar_mode = Qnil;

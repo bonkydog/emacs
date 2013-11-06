@@ -221,6 +221,8 @@ enum event_kind
   , FILE_NOTIFY_EVENT
 #endif
 
+  , ACTIVATE_EMACS_EVENT
+  , DEACTIVATE_EMACS_EVENT
 };
 
 /* If a struct input_event has a kind which is SELECTION_REQUEST_EVENT

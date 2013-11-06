@@ -4691,7 +4691,26 @@ not_in_argv (NSString *arg)
   ns_update_auto_hide_menu_bar ();
   // No constraining takes place when the application is not active.
   ns_constrain_all_frames ();
+
+  if (!emacs_event)
+    return;
+  
+  emacs_event->kind = ACTIVATE_EMACS_EVENT;
+  kbd_buffer_store_event (emacs_event);
+  ns_send_appdefined (-1);
 }
+
+- (void)applicationWillResignActive: (NSNotification *)notification
+{
+  
+  if (!emacs_event)
+    return;
+  
+  emacs_event->kind = DEACTIVATE_EMACS_EVENT;
+  kbd_buffer_store_event (emacs_event);
+  ns_send_appdefined (-1);
+}
+
 - (void)applicationDidResignActive: (NSNotification *)notification
 {
   //ns_app_active=NO;
@@ -7398,7 +7417,7 @@ syms_of_nsterm (void)
   DEFSYM (Qsuper, "super");
   DEFSYM (Qcontrol, "control");
   DEFSYM (QUTF8_STRING, "UTF8_STRING");
-
+  
   Fput (Qalt, Qmodifier_value, make_number (alt_modifier));
   Fput (Qhyper, Qmodifier_value, make_number (hyper_modifier));
   Fput (Qmeta, Qmodifier_value, make_number (meta_modifier));

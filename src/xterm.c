@@ -6595,6 +6595,8 @@ handle_one_xevent (struct x_display_info *dpyinfo,
 
     case FocusIn:
       x_detect_focus_change (dpyinfo, any, event, &inev.ie);
+      inev.ie.kind = ACTIVATE_EMACS_EVENT;
+      kbd_buffer_store_event_hold(&inev.ie, hold_quit);
       goto OTHER;
 
     case LeaveNotify:
@@ -6628,6 +6630,8 @@ handle_one_xevent (struct x_display_info *dpyinfo,
 
     case FocusOut:
       x_detect_focus_change (dpyinfo, any, event, &inev.ie);
+      inev.ie.kind = DEACTIVATE_EMACS_EVENT;
+      kbd_buffer_store_event_hold(&inev.ie, hold_quit);
       goto OTHER;
 
     case MotionNotify:

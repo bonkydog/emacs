@@ -262,6 +262,9 @@ static Lisp_Object Qdeferred_action_function;
 
 static Lisp_Object Qdelayed_warnings_hook;
 
+static Lisp_Object Qactivate_emacs_hook;
+static Lisp_Object Qdeactivate_emacs_hook;
+
 static Lisp_Object Qinput_method_exit_on_first_char;
 static Lisp_Object Qinput_method_use_echo_area;
 
@@ -3984,6 +3987,16 @@ kbd_buffer_get_event (KBOARD **kbp,
       else if (event->kind == CONFIG_CHANGED_EVENT)
 	{
 	  obj = make_lispy_event (event);
+	  kbd_fetch_ptr = event + 1;
+	}
+      else if (event->kind == ACTIVATE_EMACS_EVENT)
+      	{
+	  safe_run_hooks(Qactivate_emacs_hook);
+	  kbd_fetch_ptr = event + 1;
+	}
+      else if (event->kind == DEACTIVATE_EMACS_EVENT)
+      	{
+	  safe_run_hooks(Qdeactivate_emacs_hook);
 	  kbd_fetch_ptr = event + 1;
 	}
       else
@@ -11354,6 +11367,8 @@ syms_of_keyboard (void)
   DEFSYM (Qpre_command_hook, "pre-command-hook");
   DEFSYM (Qpost_command_hook, "post-command-hook");
   DEFSYM (Qdeferred_action_function, "deferred-action-function");
+  DEFSYM (Qactivate_emacs_hook, "activate-emacs-hook");
+  DEFSYM (Qdeactivate_emacs_hook, "deactivate-emacs-hook");
   DEFSYM (Qdelayed_warnings_hook, "delayed-warnings-hook");
   DEFSYM (Qfunction_key, "function-key");
   DEFSYM (Qmouse_click, "mouse-click");
@@ -11793,6 +11808,14 @@ If an unhandled error happens in running this hook,
 the function in which the error occurred is unconditionally removed, since
 otherwise the error might happen repeatedly and make Emacs nonfunctional.  */);
   Vpost_command_hook = Qnil;
+
+  DEFVAR_LISP ("activate-emacs-hook",  Vactivate_emacs_hook,
+             doc: /* Normal hook run when emacs becomes active.*/);
+  Vactivate_emacs_hook = Qnil;
+
+  DEFVAR_LISP ("deactivate-emacs-hook",  Vdeactivate_emacs_hook,
+             doc: /* Normal hook run when emacs becomes inactive.*/);
+  Vdeactivate_emacs_hook = Qnil;
 
 #if 0
   DEFVAR_LISP ("echo-area-clear-hook", ...,

@@ -210,6 +210,8 @@ enum event_kind
   , NS_TEXT_EVENT
   /* Non-key system events (e.g. application menu events) */
   , NS_NONKEY_EVENT
+  , ACTIVATE_EMACS_EVENT
+  , DEACTIVATE_EMACS_EVENT
 #endif
 
 };
